@@ -95,8 +95,8 @@ exports.signup = async (req, res) => {
   }
 exports.sendotp = async (req, res) => {
     try {
+      console.log(req.body);
       const { email } = req.body
-  
       
       const checkUserPresent = await User.findOne({ email })
      

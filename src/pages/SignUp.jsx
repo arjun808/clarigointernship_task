@@ -4,9 +4,13 @@ import { Link, useNavigate } from "react-router-dom";
 
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useDispatch,useSelector } from "react-redux";
+import { setSignupData } from "../slices/authSlice";
 
 import { useState } from "react";
 function SignUP() {
+  const dispatch= useDispatch();
+  const [data,setData]=useState({});
   
   const navigate = useNavigate();
   
@@ -27,20 +31,30 @@ function SignUP() {
       callback();
     }
   };
- 
   const onFinish = async (values) => {
-   try{
- const responce= await axios.post("/api/v1/auth/signup",values);
-//  if(responce.data.success==true){
-//     console.log("data sended to server successfully");
-//  }
- console.log("data sended to server successfully");
-   }catch(error){
-    console.log(error,"error while sending the data to server");
-
-   }
-   
+    try {
+    
+      
+      const email=values.email;
+      await axios.post("http://localhost:4000/api/v1/auth/sendotp",{email})
+        .then((response) => {
+          console.log(response.data.success);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+        setData(values);
+        const signupdata={
+          ...data,
+        }
+        dispatch(setSignupData(signupdata));
+   toast.success("otp is sended to your mail please check")
+        navigate("/verification",data)
+    } catch (err) {
+      console.error(err);
+    }
   };
+ 
 
   return (
     <div >
@@ -133,9 +147,7 @@ function SignUP() {
           <Form.Item label="confirm Password" name="confirmPassword">
             <Input placeholder="Confirm Password" type="password" />
           </Form.Item>
-          <Form.Item label="otp" name="otp">
-            <Input placeholder="otp" type="Number"/>
-          </Form.Item>
+         
 
         
          <Button
